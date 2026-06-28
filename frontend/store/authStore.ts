@@ -9,13 +9,28 @@ interface AuthState {
   logout: () => void;
 }
 
+function setTokenCookie(token: string | null) {
+  if (typeof document === "undefined") return;
+  if (token) {
+    document.cookie = `signal_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
+  } else {
+    document.cookie = "signal_token=; path=/; max-age=0";
+  }
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
       token: null,
-      setAuth: (user, token) => set({ user, token }),
-      logout: () => set({ user: null, token: null }),
+      setAuth: (user, token) => {
+        setTokenCookie(token);
+        set({ user, token });
+      },
+      logout: () => {
+        setTokenCookie(null);
+        set({ user: null, token: null });
+      },
     }),
     { name: "signal_auth" }
   )
