@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { useChatStore } from "@/store/chatStore";
 import { useModalStore } from "@/store/modalStore";
@@ -19,6 +19,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const setConversations = useChatStore((s) => s.setConversations);
   const activeModal = useModalStore((s) => s.activeModal);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!token) {
@@ -43,7 +44,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex h-screen overflow-hidden bg-signal-bg">
       <Sidebar />
-      <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+      <main key={pathname} className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-150">
+        {children}
+      </main>
       {activeModal === "newChat" && <NewChatModal />}
       {activeModal === "newGroup" && <NewGroupModal />}
       {activeModal === "comingSoon" && <ComingSoonModal />}
