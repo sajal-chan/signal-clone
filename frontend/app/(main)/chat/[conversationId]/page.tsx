@@ -29,6 +29,7 @@ export default function ChatPage({ params }: Props) {
   const conversation: Conversation | undefined = conversations.find((c) => c.id === convId);
   const messages = useChatStore((s) => s.messages[convId]);
   const [showGroupInfo, setShowGroupInfo] = useState(false);
+  const [replyTo, setReplyTo] = useState<{ id: number; content: string; senderName: string } | null>(null);
 
   useEffect(() => {
     setActive(convId);
@@ -63,8 +64,11 @@ export default function ChatPage({ params }: Props) {
           conversation={conversation}
           onGroupInfoClick={() => setShowGroupInfo((v) => !v)}
         />
-        <MessageList conversation={conversation} />
-        <Composer conversationId={convId} />
+        <MessageList
+          conversation={conversation}
+          onReply={(msg) => setReplyTo({ id: msg.id, content: msg.content, senderName: msg.sender.display_name })}
+        />
+        <Composer conversationId={convId} replyTo={replyTo} onClearReply={() => setReplyTo(null)} />
       </div>
       {showGroupInfo && conversation.type === "group" && (
         <GroupInfoPanel

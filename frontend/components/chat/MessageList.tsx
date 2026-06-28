@@ -10,6 +10,7 @@ import type { Conversation, Message } from "@/types";
 
 interface Props {
   conversation: Conversation;
+  onReply: (msg: Message) => void;
 }
 
 function DateSeparator({ date }: { date: string }) {
@@ -29,7 +30,7 @@ function shouldShowDateSeparator(prev: Message | undefined, curr: Message) {
   return new Date(prev.created_at).toDateString() !== new Date(curr.created_at).toDateString();
 }
 
-export default function MessageList({ conversation }: Props) {
+export default function MessageList({ conversation, onReply }: Props) {
   const messages = useChatStore((s) => s.messages[conversation.id] ?? []);
   const typingUsers = useChatStore((s) => s.typingUsers[conversation.id] ?? new Set());
   const currentUser = useAuthStore((s) => s.user);
@@ -68,7 +69,7 @@ export default function MessageList({ conversation }: Props) {
           {shouldShowDateSeparator(messages[idx - 1], msg) && (
             <DateSeparator date={msg.created_at} />
           )}
-          <MessageBubble message={msg} isOwn={msg.sender_id === currentUser?.id} />
+          <MessageBubble message={msg} isOwn={msg.sender_id === currentUser?.id} onReply={onReply} />
         </div>
       ))}
       <TypingIndicator names={typingNames} />

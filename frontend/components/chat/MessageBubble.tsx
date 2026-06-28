@@ -1,20 +1,56 @@
 "use client";
 
+import { useState, useRef } from "react";
 import type { Message } from "@/types";
 import TickMark from "./TickMark";
 import { useChatStore } from "@/store/chatStore";
+import { useAuthStore } from "@/store/authStore";
+import { socketManager } from "@/lib/socket";
+import ReactionPicker from "./ReactionPicker";
 
 interface Props {
   message: Message;
   isOwn: boolean;
+  onReply: (msg: Message) => void;
 }
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-export default function MessageBubble({ message, isOwn }: Props) {
+export default function MessageBubble({ message, isOwn, onReply }: Props) {
   const status = useChatStore((s) => s.messageStatuses[message.id]);
+  const currentUser = useAuthStore((s) => s.user);
+  const [picker, setPicker] = useState<{ x: number; y: number } | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleContextMenu(e: React.MouseEvent) {
+    e.preventDefault();
+    if (message.type === "system" || message.is_deleted) return;
+    setPicker({ x: e.clientX, y: e.clientY });
+  }
+
+  function handlePointerDown(e: React.PointerEvent) {
+    if (e.pointerType !== "touch") return;
+    longPressTimer.current = setTimeout(() => {
+      setPicker({ x: e.clientX, y: e.clientY });
+    }, 500);
+  }
+
+  function handlePointerUp() {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+  }
+
+  function handleReact(emoji: string) {
+    const alreadyReacted = message.reactions.some(
+      (r) => r.emoji === emoji && r.user_id === currentUser?.id
+    );
+    socketManager.send(
+      alreadyReacted
+        ? { type: "reaction:remove", message_id: message.id, emoji }
+        : { type: "reaction:add", message_id: message.id, emoji }
+    );
+  }
 
   if (message.type === "system") {
     return (
@@ -41,7 +77,10 @@ export default function MessageBubble({ message, isOwn }: Props) {
       )}
 
       <div
-        className={`max-w-xs lg:max-w-md xl:max-w-lg px-3 py-2 rounded-2xl ${
+        onContextMenu={handleContextMenu}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        className={`max-w-xs lg:max-w-md xl:max-w-lg px-3 py-2 rounded-2xl cursor-pointer select-none ${
           isOwn
             ? "bg-signal-bubble-outgoing rounded-br-sm"
             : "bg-signal-bubble-incoming rounded-bl-sm"
@@ -87,6 +126,15 @@ export default function MessageBubble({ message, isOwn }: Props) {
             </span>
           ))}
         </div>
+      )}
+
+      {picker && (
+        <ReactionPicker
+          position={picker}
+          onReact={handleReact}
+          onReply={() => onReply(message)}
+          onClose={() => setPicker(null)}
+        />
       )}
     </div>
   );
