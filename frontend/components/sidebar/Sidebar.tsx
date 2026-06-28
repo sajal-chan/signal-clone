@@ -2,11 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import { useChatStore } from "@/store/chatStore";
+import { useModalStore } from "@/store/modalStore";
 import ConversationItem from "./ConversationItem";
 
 export default function Sidebar() {
   const conversations = useChatStore((s) => s.conversations);
   const activeId = useChatStore((s) => s.activeConversationId);
+  const openModal = useModalStore((s) => s.openModal);
   const pathname = usePathname();
 
   // Derive active conversation id from URL if store not set
@@ -25,7 +27,7 @@ export default function Sidebar() {
           <button
             className="p-2 rounded-full hover:bg-white/10 text-signal-text-secondary transition-colors"
             title="New chat"
-            onClick={() => {/* opened in plan 06 */}}
+            onClick={() => openModal("newChat")}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
