@@ -9,7 +9,8 @@ class SocketManager {
     if (this.ws?.readyState === WebSocket.OPEN) return;
 
     // Next.js rewrites don't cover WebSocket — connect directly to backend
-    this.ws = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
+    const wsBase = process.env.NEXT_PUBLIC_WS_URL ?? "ws://localhost:3277";
+    this.ws = new WebSocket(`${wsBase}/ws?token=${token}`);
 
     this.ws.onmessage = (event) => {
       let data: WsServerEvent;

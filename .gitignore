@@ -1,0 +1,21 @@
+SPEC.md
+.claude
+.superpowers/*
+docs/*
+
+# Python
+backend/venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+*.egg-info/
+
+# Backend secrets & local state
+backend/.env
+backend/.env.*
+backend/*.db
+
+# OS
+.DS_Store
+Thumbs.db

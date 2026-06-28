@@ -13,6 +13,9 @@ interface Props {
   onReply: (msg: Message) => void;
 }
 
+const EMPTY_MESSAGES: Message[] = [];
+const EMPTY_TYPING = new Set<number>();
+
 function DateSeparator({ date }: { date: string }) {
   const d = new Date(date);
   const label = d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
@@ -31,8 +34,8 @@ function shouldShowDateSeparator(prev: Message | undefined, curr: Message) {
 }
 
 export default function MessageList({ conversation, onReply }: Props) {
-  const messages = useChatStore((s) => s.messages[conversation.id] ?? []);
-  const typingUsers = useChatStore((s) => s.typingUsers[conversation.id] ?? new Set());
+  const messages = useChatStore((s) => s.messages[conversation.id] ?? EMPTY_MESSAGES);
+  const typingUsers = useChatStore((s) => s.typingUsers[conversation.id] ?? EMPTY_TYPING);
   const currentUser = useAuthStore((s) => s.user);
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
