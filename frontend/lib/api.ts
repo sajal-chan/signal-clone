@@ -19,7 +19,10 @@ api.interceptors.response.use(
       useAuthStore.getState().logout();
       window.location.href = "/login";
     } else {
-      const message = err.response?.data?.detail ?? "Something went wrong";
+      const raw = err.response?.data?.detail;
+      const message = Array.isArray(raw)
+        ? (raw as Array<{ msg: string }>).map((e) => e.msg).join(", ")
+        : (raw as string | undefined) ?? "Something went wrong";
       useToastStore.getState().addToast(message, "error");
     }
     return Promise.reject(err);

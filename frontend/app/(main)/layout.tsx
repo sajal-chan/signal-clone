@@ -44,7 +44,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex h-screen overflow-hidden bg-signal-bg">
       <Sidebar />
-      <main key={pathname} className="flex-1 flex flex-col overflow-hidden animate-in fade-in duration-150">
+      <main key={pathname} className="flex-1 flex flex-col overflow-hidden animate-in fade-in">
         {children}
       </main>
       {activeModal === "newChat" && <NewChatModal />}

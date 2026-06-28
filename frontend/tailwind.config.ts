@@ -29,9 +29,6 @@ const config: Config = {
         fadeIn: { from: { opacity: "0" }, to: { opacity: "1" } },
         slideInFromBottom: { from: { transform: "translateY(8px)", opacity: "0" }, to: { transform: "translateY(0)", opacity: "1" } },
       },
-      animation: {
-        "in": "fadeIn 150ms ease-out",
-      },
     },
   },
   plugins: [

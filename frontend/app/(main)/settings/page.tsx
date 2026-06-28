@@ -17,10 +17,14 @@ export default function SettingsPage() {
   async function save(e: React.FormEvent) {
     e.preventDefault();
     if (!token || !user) return;
+    if (!displayName.trim()) {
+      addToast("Display name cannot be empty", "error");
+      return;
+    }
     setSaving(true);
     try {
       const { data } = await api.patch<UserPrivate>("/users/me", {
-        display_name: displayName || undefined,
+        display_name: displayName.trim(),
         status_message: statusMessage || undefined,
       });
       setAuth(data, token);
@@ -35,6 +39,7 @@ export default function SettingsPage() {
   if (!user) return null;
 
   return (
+    <div className="flex-1 overflow-y-auto">
     <div className="max-w-lg mx-auto py-10 px-6 space-y-8">
       <h1 className="text-2xl font-semibold text-signal-text-primary">Settings</h1>
 
@@ -50,16 +55,18 @@ export default function SettingsPage() {
         </div>
         <form onSubmit={save} className="space-y-4">
           <div>
-            <label className="block text-sm text-signal-text-secondary mb-1">Display Name</label>
+            <label htmlFor="displayName" className="block text-sm text-signal-text-secondary mb-1">Display Name</label>
             <input
+              id="displayName"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               className="w-full bg-signal-input border border-signal-divider rounded-lg px-4 py-2.5 text-signal-text-primary focus:outline-none focus:border-signal-accent"
             />
           </div>
           <div>
-            <label className="block text-sm text-signal-text-secondary mb-1">About</label>
+            <label htmlFor="statusMessage" className="block text-sm text-signal-text-secondary mb-1">About</label>
             <input
+              id="statusMessage"
               value={statusMessage}
               onChange={(e) => setStatusMessage(e.target.value)}
               placeholder="What's your status?"
@@ -112,6 +119,7 @@ export default function SettingsPage() {
       >
         Log Out
       </button>
+    </div>
     </div>
   );
 }
