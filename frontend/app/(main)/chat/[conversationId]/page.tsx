@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { use } from "react";
 import { notFound } from "next/navigation";
 import { useChatStore } from "@/store/chatStore";
@@ -9,6 +9,7 @@ import api from "@/lib/api";
 import ChatHeader from "@/components/chat/ChatHeader";
 import MessageList from "@/components/chat/MessageList";
 import Composer from "@/components/chat/Composer";
+import GroupInfoPanel from "@/components/modals/GroupInfoPanel";
 import type { Message, Conversation } from "@/types";
 
 interface Props {
@@ -27,6 +28,7 @@ export default function ChatPage({ params }: Props) {
 
   const conversation: Conversation | undefined = conversations.find((c) => c.id === convId);
   const messages = useChatStore((s) => s.messages[convId]);
+  const [showGroupInfo, setShowGroupInfo] = useState(false);
 
   useEffect(() => {
     setActive(convId);
@@ -55,10 +57,21 @@ export default function ChatPage({ params }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <ChatHeader conversation={conversation} />
-      <MessageList conversation={conversation} />
-      <Composer conversationId={convId} />
+    <div className="flex h-full">
+      <div className="flex flex-col flex-1 min-w-0">
+        <ChatHeader
+          conversation={conversation}
+          onGroupInfoClick={() => setShowGroupInfo((v) => !v)}
+        />
+        <MessageList conversation={conversation} />
+        <Composer conversationId={convId} />
+      </div>
+      {showGroupInfo && conversation.type === "group" && (
+        <GroupInfoPanel
+          conversation={conversation}
+          onClose={() => setShowGroupInfo(false)}
+        />
+      )}
     </div>
   );
 }
