@@ -11,6 +11,7 @@ import type { Conversation } from "@/types";
 import Sidebar from "@/components/sidebar/Sidebar";
 import NewChatModal from "@/components/modals/NewChatModal";
 import NewGroupModal from "@/components/modals/NewGroupModal";
+import ComingSoonModal from "@/components/modals/ComingSoonModal";
 import ToastContainer from "@/components/ui/Toast";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
@@ -45,6 +46,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
       {activeModal === "newChat" && <NewChatModal />}
       {activeModal === "newGroup" && <NewGroupModal />}
+      {activeModal === "comingSoon" && <ComingSoonModal />}
       <ToastContainer />
     </div>
   );
