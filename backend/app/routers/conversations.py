@@ -151,6 +151,9 @@ async def update_conversation(
     conv = result.scalar_one_or_none()
     if not conv or not any(m.user_id == current_user.id for m in conv.members):
         raise HTTPException(status_code=404, detail="Conversation not found")
+    member = next((m for m in conv.members if m.user_id == current_user.id), None)
+    if not member or member.role != MemberRole.admin:
+        raise HTTPException(status_code=403, detail="Admin only")
     if body.name is not None:
         conv.name = body.name
     await db.commit()
