@@ -41,10 +41,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   if (!user) return null;
 
+  const isInChat = pathname.startsWith("/chat/");
+
   return (
     <div className="flex h-screen overflow-hidden bg-signal-bg">
-      <Sidebar />
-      <main key={pathname} className="flex-1 flex flex-col overflow-hidden animate-in fade-in">
+      <div className={isInChat ? "hidden md:flex" : "flex w-full md:w-auto"}>
+        <Sidebar />
+      </div>
+      <main key={pathname} className={`flex-1 flex-col overflow-hidden animate-in fade-in ${isInChat ? "flex" : "hidden md:flex"}`}>
         {children}
       </main>
       {activeModal === "newChat" && <NewChatModal />}

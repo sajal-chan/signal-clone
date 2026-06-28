@@ -19,7 +19,7 @@ export default function Sidebar() {
   const currentActiveId = activeId ?? activeFromUrl;
 
   return (
-    <aside className="w-[360px] flex-shrink-0 bg-signal-sidebar flex flex-col border-r border-signal-divider">
+    <aside className="w-full md:w-[360px] flex-shrink-0 bg-signal-sidebar flex flex-col border-r border-signal-divider">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-signal-divider">
         <h1 className="text-xl font-semibold text-signal-text-primary">Signal</h1>

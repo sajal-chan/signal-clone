@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Avatar from "@/components/ui/Avatar";
 import { useModalStore } from "@/store/modalStore";
 import type { Conversation } from "@/types";
@@ -23,6 +24,7 @@ function formatLastSeen(iso: string) {
 
 export default function ChatHeader({ conversation, onGroupInfoClick }: Props) {
   const openModal = useModalStore((s) => s.openModal);
+  const router = useRouter();
   const isGroup = conversation.type === "group";
   const name = isGroup
     ? (conversation.name ?? "Group")
@@ -37,6 +39,15 @@ export default function ChatHeader({ conversation, onGroupInfoClick }: Props) {
   return (
     <div className="flex items-center justify-between px-4 py-3 border-b border-signal-divider bg-signal-sidebar flex-shrink-0">
       <div className="flex items-center gap-3">
+        <button
+          className="md:hidden p-2 -ml-1 rounded-full hover:bg-white/10 text-signal-text-secondary transition-colors"
+          onClick={() => router.push("/")}
+          aria-label="Back"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
         <Avatar
           name={name}
           size="md"
