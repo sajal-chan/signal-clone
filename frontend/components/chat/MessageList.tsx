@@ -41,7 +41,7 @@ export default function MessageList({ conversation }: Props) {
     const container = containerRef.current;
     if (!container) return;
     const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-    if (isNearBottom || messages.length <= 50) {
+    if (isNearBottom) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages.length]);

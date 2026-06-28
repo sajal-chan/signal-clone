@@ -22,6 +22,7 @@ export default function ChatPage({ params }: Props) {
   const conversations = useChatStore((s) => s.conversations);
   const setMessages = useChatStore((s) => s.setMessages);
   const setActive = useChatStore((s) => s.setActiveConversation);
+  const clearUnread = useChatStore((s) => s.clearUnread);
   const user = useAuthStore((s) => s.user);
 
   const conversation: Conversation | undefined = conversations.find((c) => c.id === convId);
@@ -29,6 +30,7 @@ export default function ChatPage({ params }: Props) {
 
   useEffect(() => {
     setActive(convId);
+    clearUnread(convId);
     if (!messages) {
       api.get<Message[]>(`/conversations/${convId}/messages`).then((res) => {
         setMessages(convId, res.data);
