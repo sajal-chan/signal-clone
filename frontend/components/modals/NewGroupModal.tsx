@@ -22,7 +22,7 @@ export default function NewGroupModal() {
   useEffect(() => {
     api.get<Contact[]>("/contacts").then((res) => {
       setContacts(res.data.map((c) => c.contact_user));
-    });
+    }).catch(() => {});
   }, []);
 
   function toggleUser(id: number) {
@@ -63,6 +63,9 @@ export default function NewGroupModal() {
       {step === "members" ? (
         <>
           <div className="max-h-72 overflow-y-auto">
+            {contacts.length === 0 && (
+              <p className="text-center text-signal-text-secondary text-sm py-6">No contacts yet</p>
+            )}
             {contacts.map((user) => (
               <button
                 key={user.id}

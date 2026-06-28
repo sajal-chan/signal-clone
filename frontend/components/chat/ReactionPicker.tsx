@@ -15,7 +15,7 @@ export default function ReactionPicker({ onReact, onReply, onClose, position }: 
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         className="fixed z-50 bg-signal-sidebar border border-signal-divider rounded-2xl shadow-xl p-2 flex flex-col gap-1"
-        style={{ left: position.x, top: position.y, transform: "translate(-50%, -110%)" }}
+        style={{ left: position.x, top: position.y, transform: position.y < 120 ? "translate(-50%, 10px)" : "translate(-50%, -110%)" }}
       >
         <div className="flex gap-1">
           {QUICK_EMOJIS.map((emoji) => (

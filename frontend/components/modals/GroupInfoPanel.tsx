@@ -40,16 +40,24 @@ export default function GroupInfoPanel({ conversation, onClose }: Props) {
   }
 
   async function removeMember(userId: number) {
-    await api.delete(`/conversations/${conversation.id}/members/${userId}`);
-    const { data } = await api.get<Conversation>(`/conversations/${conversation.id}`);
-    upsertConversation(data);
+    try {
+      await api.delete(`/conversations/${conversation.id}/members/${userId}`);
+      const { data } = await api.get<Conversation>(`/conversations/${conversation.id}`);
+      upsertConversation(data);
+    } catch {
+      // silently ignore — no toast system yet
+    }
   }
 
   async function leaveGroup() {
     if (!currentUser) return;
-    await api.delete(`/conversations/${conversation.id}/members/${currentUser.id}`);
-    router.push("/");
-    onClose();
+    try {
+      await api.delete(`/conversations/${conversation.id}/members/${currentUser.id}`);
+      router.push("/");
+      onClose();
+    } catch {
+      // silently ignore — no toast system yet
+    }
   }
 
   return (
@@ -82,7 +90,7 @@ export default function GroupInfoPanel({ conversation, onClose }: Props) {
           <div className="flex items-center gap-2">
             <span className="text-lg font-semibold text-signal-text-primary">{conversation.name}</span>
             {isAdmin && (
-              <button onClick={() => setEditingName(true)} className="text-signal-text-secondary hover:text-signal-text-primary">
+              <button onClick={() => { setNewName(conversation.name ?? ""); setEditingName(true); }} className="text-signal-text-secondary hover:text-signal-text-primary">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>

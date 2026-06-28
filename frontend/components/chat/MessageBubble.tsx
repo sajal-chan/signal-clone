@@ -24,16 +24,22 @@ export default function MessageBubble({ message, isOwn, onReply }: Props) {
   const [picker, setPicker] = useState<{ x: number; y: number } | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  function getClampedPosition(clientX: number, clientY: number) {
+    const x = Math.max(120, Math.min(clientX, window.innerWidth - 120));
+    const y = clientY;
+    return { x, y };
+  }
+
   function handleContextMenu(e: React.MouseEvent) {
     e.preventDefault();
     if (message.type === "system" || message.is_deleted) return;
-    setPicker({ x: e.clientX, y: e.clientY });
+    setPicker(getClampedPosition(e.clientX, e.clientY));
   }
 
   function handlePointerDown(e: React.PointerEvent) {
     if (e.pointerType !== "touch") return;
     longPressTimer.current = setTimeout(() => {
-      setPicker({ x: e.clientX, y: e.clientY });
+      setPicker(getClampedPosition(e.clientX, e.clientY));
     }, 500);
   }
 

@@ -21,7 +21,7 @@ export default function NewChatModal() {
   useEffect(() => {
     api.get<Contact[]>("/contacts").then((res) => {
       setContacts(res.data.map((c) => c.contact_user));
-    });
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function NewChatModal() {
     const timer = setTimeout(() => {
       api.get<User[]>(`/users/search?q=${encodeURIComponent(query)}`).then((res) => {
         setSearchResults(res.data);
-      });
+      }).catch(() => {});
     }, 300);
     return () => clearTimeout(timer);
   }, [query]);
