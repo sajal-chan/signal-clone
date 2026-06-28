@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "@/store/authStore";
+import { useToastStore } from "@/store/toastStore";
 
 const api = axios.create({ baseURL: "/api" });
 
@@ -17,6 +18,9 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       useAuthStore.getState().logout();
       window.location.href = "/login";
+    } else {
+      const message = err.response?.data?.detail ?? "Something went wrong";
+      useToastStore.getState().addToast(message, "error");
     }
     return Promise.reject(err);
   }
