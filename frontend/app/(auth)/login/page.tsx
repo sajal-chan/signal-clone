@@ -25,8 +25,7 @@ export default function LoginPage() {
       await api.post("/auth/login", { username });
       setStep("otp");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "User not found";
-      setError(message);
+      setError((err as { response?: { data?: { detail?: string } } }).response?.data?.detail ?? "User not found");
     } finally {
       setLoading(false);
     }

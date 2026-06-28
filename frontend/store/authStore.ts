@@ -12,7 +12,8 @@ interface AuthState {
 function setTokenCookie(token: string | null) {
   if (typeof document === "undefined") return;
   if (token) {
-    document.cookie = `signal_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
+    // dev-only: token in JS-readable cookie for proxy auth check
+    document.cookie = `signal_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
   } else {
     document.cookie = "signal_token=; path=/; max-age=0";
   }
