@@ -60,7 +60,10 @@ class SocketManager {
         store.updateMessageReactions(event.message_id, event.reactions);
         break;
       }
-      // message:status handled in plan 05 (tick marks)
+      case "message:status": {
+        store.updateMessageStatus(event.message_id, event.status);
+        break;
+      }
     }
   }
 }

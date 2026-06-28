@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { use } from "react";
 import { notFound } from "next/navigation";
 import { useChatStore } from "@/store/chatStore";
+import { useAuthStore } from "@/store/authStore";
 import api from "@/lib/api";
 import ChatHeader from "@/components/chat/ChatHeader";
 import MessageList from "@/components/chat/MessageList";
@@ -21,6 +22,7 @@ export default function ChatPage({ params }: Props) {
   const conversations = useChatStore((s) => s.conversations);
   const setMessages = useChatStore((s) => s.setMessages);
   const setActive = useChatStore((s) => s.setActiveConversation);
+  const user = useAuthStore((s) => s.user);
 
   const conversation: Conversation | undefined = conversations.find((c) => c.id === convId);
   const messages = useChatStore((s) => s.messages[convId]);
@@ -30,6 +32,15 @@ export default function ChatPage({ params }: Props) {
     if (!messages) {
       api.get<Message[]>(`/conversations/${convId}/messages`).then((res) => {
         setMessages(convId, res.data);
+        // Seed initial "sent" status for own messages (real upgrades come via WS events)
+        if (user) {
+          const { updateMessageStatus } = useChatStore.getState();
+          for (const msg of res.data) {
+            if (msg.sender_id === user.id) {
+              updateMessageStatus(msg.id, "sent");
+            }
+          }
+        }
       });
     }
     return () => setActive(null);

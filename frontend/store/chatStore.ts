@@ -17,6 +17,8 @@ interface ChatState {
   setUserOnline: (userId: number, isOnline: boolean, lastSeen: string) => void;
   incrementUnread: (conversationId: number) => void;
   clearUnread: (conversationId: number) => void;
+  messageStatuses: Record<number, "sent" | "delivered" | "read">; // messageId → status
+  updateMessageStatus: (messageId: number, status: "sent" | "delivered" | "read") => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -24,6 +26,7 @@ export const useChatStore = create<ChatState>((set) => ({
   messages: {},
   typingUsers: {},
   activeConversationId: null,
+  messageStatuses: {},
 
   setConversations: (convs) => set({ conversations: convs }),
 
@@ -132,4 +135,15 @@ export const useChatStore = create<ChatState>((set) => ({
         c.id === conversationId ? { ...c, unread_count: 0 } : c
       ),
     })),
+
+  updateMessageStatus: (messageId, status) =>
+    set((state) => {
+      const current = state.messageStatuses[messageId];
+      const order: Record<string, number> = { sent: 0, delivered: 1, read: 2 };
+      // Only upgrade status, never downgrade
+      if (!current || order[status] > order[current]) {
+        return { messageStatuses: { ...state.messageStatuses, [messageId]: status } };
+      }
+      return state;
+    }),
 }));

@@ -1,6 +1,8 @@
 "use client";
 
 import type { Message } from "@/types";
+import TickMark from "./TickMark";
+import { useChatStore } from "@/store/chatStore";
 
 interface Props {
   message: Message;
@@ -12,6 +14,8 @@ function formatTime(iso: string) {
 }
 
 export default function MessageBubble({ message, isOwn }: Props) {
+  const status = useChatStore((s) => s.messageStatuses[message.id]);
+
   if (message.type === "system") {
     return (
       <div className="flex justify-center my-1">
@@ -62,7 +66,7 @@ export default function MessageBubble({ message, isOwn }: Props) {
           <span className="text-xs text-signal-text-secondary opacity-70">
             {formatTime(message.created_at)}
           </span>
-          {/* Tick marks — rendered in plan 05 tick task */}
+          {isOwn && status && <TickMark status={status} />}
         </div>
       </div>
 
