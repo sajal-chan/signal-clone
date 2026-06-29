@@ -14,7 +14,7 @@ interface Props {
 }
 
 const EMPTY_MESSAGES: Message[] = [];
-const EMPTY_TYPING = new Set<number>();
+const EMPTY_TYPING: number[] = [];
 
 function DateSeparator({ date }: { date: string }) {
   const d = new Date(date);
@@ -39,13 +39,30 @@ export default function MessageList({ conversation, onReply }: Props) {
   const currentUser = useAuthStore((s) => s.user);
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Tracks whether the user was at the bottom BEFORE a new message rendered
+  const isAtBottomRef = useRef(true);
 
-  // Auto-scroll to bottom on new messages if already near bottom
+  // Keep isAtBottomRef up to date as the user scrolls
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-    if (isNearBottom) {
+    const onScroll = () => {
+      isAtBottomRef.current =
+        container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => container.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Jump to bottom instantly when switching conversations
+  useEffect(() => {
+    isAtBottomRef.current = true;
+    bottomRef.current?.scrollIntoView({ behavior: "instant" });
+  }, [conversation.id]);
+
+  // Scroll to bottom on new message if the user was already at the bottom
+  useEffect(() => {
+    if (isAtBottomRef.current) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages.length]);

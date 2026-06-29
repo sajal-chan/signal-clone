@@ -1,4 +1,5 @@
 import { useChatStore } from "@/store/chatStore";
+import { useAuthStore } from "@/store/authStore";
 import api from "@/lib/api";
 import type { WsClientEvent, WsServerEvent, Conversation } from "@/types";
 
@@ -41,19 +42,17 @@ class SocketManager {
 
   private dispatch(event: WsServerEvent) {
     const store = useChatStore.getState();
-    const { activeConversationId } = store;
 
     switch (event.type) {
       case "message:new": {
-        store.appendMessage(event.message);
+        const currentUserId = useAuthStore.getState().user?.id;
+        store.appendMessage(event.message, currentUserId);
         const convId = event.message.conversation_id;
         const convExists = store.conversations.some((c) => c.id === convId);
         if (!convExists) {
           api.get<Conversation>(`/conversations/${convId}`)
             .then((res) => useChatStore.getState().upsertConversation(res.data))
             .catch(() => {});
-        } else if (convId !== activeConversationId) {
-          store.incrementUnread(convId);
         }
         break;
       }
@@ -79,7 +78,7 @@ class SocketManager {
         break;
       }
       case "reaction:update": {
-        store.updateMessageReactions(event.message_id, event.reactions);
+        store.updateMessageReactions(event.conversation_id, event.message_id, event.reactions);
         break;
       }
       case "message:status": {

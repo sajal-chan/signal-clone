@@ -79,4 +79,4 @@ export type WsServerEvent =
   | { type: "message:status"; message_id: number; user_id: number; status: "sent" | "delivered" | "read" }
   | { type: "typing:update"; conversation_id: number; user_id: number; is_typing: boolean }
   | { type: "presence:update"; user_id: number; is_online: boolean; last_seen: string }
-  | { type: "reaction:update"; message_id: number; reactions: Reaction[] };
+  | { type: "reaction:update"; conversation_id: number; message_id: number; reactions: Reaction[] };
